@@ -8,229 +8,100 @@
   </title>
   <link rel="stylesheet" href="/styles/pico.css" />
   <link rel="stylesheet" href="/styles/chat.css" />
-  <style>
-    main {
-      position: fixed;
-      display: flex;
-      height: 100vh;
-    }
+  <!-- <link rel="stylesheet" href="/styles/landing.css" /> -->
+  <link rel="stylesheet" href="/styles/games.css" />
+  <link rel="stylesheet" href="/styles/cards.css" />
 
-    nav {
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 6%;
-      padding: 10px;
-    }
-
-    .logout {
-      list-style: none;
-      margin-left: auto;
-      padding: 0;
-    }
-
-    .play-area {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      height: 15%;
-    }
-
-    .buttons-container {
-      display: flex;
-      gap: 10px;
-    }
-
-    .centered-image {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 60%;
-    }
-
-    .centered-image img {
-      max-width: 50%;
-      max-height: 50%;
-      animation: rotateAnimation 10s linear infinite;
-    }
-
-    @keyframes rotateAnimation {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    button {
-      background-color: black;
-      color: white;
-      width: 50%;
-    }
-
-    .my-area {
-      display: flex;
-      width: 90%;
-      height: 25%;
-      padding: 10px;
-      margin: auto;
-      justify-content: center;
-      align-items: center;
-      box-sizing: border-box;
-    }
-
-    .mycard-button {
-      cursor: pointer;
-      margin: 10px;
-    }
-
-    .game-set {
-      width: 70%;
-      height: 100%;
-    }
-
-    .container {
-      margin-top: 60px;
-      width: 80%;
-      max-width: 500px;
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-
-    }
-
-    .chat-set {
-      position: relative;
-      width: 30%;
-      height: 100%;
-      background-color: black;
-      text-align: center;
-    }
-
-    article {
-      width: 90%;
-      height: 70%;
-      overflow-y: auto;
-      margin: 0 20px;
-      padding: 20px;
-    }
-
-    .message-nav {
-      width: 95%;
-      margin: 10px;
-      display: flex;
-      align-items: center;
-    }
-
-    input[name="message"] {
-      width: 800px;
-      flex: 1;
-      margin: 10px;
-    }
-
-    .send-button {
-      width: 40%;
-      max-width: 90px;
-      color: #24333e;
-      margin: 10px;
-      border: none;
-      cursor: pointer;
-    }
-
-    .button-options {
-      width: 80%;
-      max-width: 500px;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin: auto;
-    }
-
-    .button-options button {
-      background-color: white;
-      color: black;
-      margin: 10px 0;
-    }
-
-    .avatar-container {
-      margin-top: 20px;
-    }
-
-    .avatar {
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-  </style>
 </head>
 
 <body>
   <main>
     <div class="game-set">
       <div class="play-area">
-        <p>Current turn: Scott</p>
+        <p>Status:: <%= gameDetails?.status %>
+        </p>
+        <p>Current turn: <%= currentPlayer.username %> - <%= currentPlayer.id %>
+        </p>
+        <p>You are <%= user %>
+        </p>
         <div class="buttons-container">
-          <button>Draw</button>
-          <button>Skip</button>
-          <button>Say Uno !!!</button>
+          <form action="/game/<%= id %>/draw" method="POST">
+            <button class="uno-button" type="submit">Draw</button>
+          </form>
+          <button class="uno-button">Skip</button>
+          <button class="uno-button">Say Uno !!!</button>
         </div>
       </div>
 
       <div class="centered-image">
-        <img src="../current-card.png" alt="Centered Image">
+        <div class="<%= lastCard.suit %>-<%= lastCard.value %>"></div>
+
       </div>
 
-      <div class="my-area">
-        <img src="../red-0.png" alt="Button 1" class="mycard-button" />
-        <img src="../green-null.png" alt="Button 2" class="mycard-button" />
-        <img src="../yellow-reverse.png" alt="Button 3" class="mycard-button" />
-        <img src="../yellow-3.png" alt="Button 4" class="mycard-button" />
-      </div>
+      <% if (currentPlayer.id==user) { %>
+        <h4>It's your turn!</h4>
+        <% } %>
+          <div class="my-area">
+
+            <% myCards.forEach((card, index)=> { %>
+              <form id="playCardForm<%=index%>" action="/game/playCard" method="post">
+                <input type="hidden" name="suit" value="<%= card.suit %>">
+                <input type="hidden" name="value" value="<%= card.value %>">
+                <input type="hidden" name="gameId" value="<%= id %>">
+                <input type="hidden" name="card_id" value="<%= card.card_id %>">
+
+                <div onClick="playCard(<%=index%>)" class="<%= card.suit %>-<%= card.value %>">
+                </div>
+              </form>
+              <% }) %>
+          </div>
+
+
+          <div id="winPopup" class="popup">
+            <div class="popup-content">
+              <h2>Game Over</h2>
+              <p>The winner: Anh</p>
+              <button class="close-popup" onclick="closePopup()">Close</button>
+            </div>
+          </div>
     </div>
 
     <div class="chat-set">
       <nav>
-        <div class="exit"><a href="/lobby">Exit Game</a></div>
-        <div class="logout"><a href="/auth/logout">Logout</a></div>
+        <div class="exit-button"><a href="/">Exit Game</a></div>
+        <form action="/sign_in" method="POST">
+          <button class="logout">Logout</button>
+        </form>
       </nav>
 
       <h2>Game <%= id %>
       </h2>
-      <article>
-        <div class="message not-me">
-          <img src="https://placehold.co/50x50?text=PP" alt="Avatar" />
-          <p>Hello!!<br /> Oh wait me a second...</p>
-        </div>
-        <div class="message not-me">
-          <img src="https://placehold.co/50x50?text=SM" alt="Avatar" />
-          <p>Hey! I'm good. How many people joining toight?</p>
-        </div>
-        <div class="message not-me">
-          <img src="https://placehold.co/50x50?text=AP" alt="Avatar" />
-          <p>How're you doing?</p>
-        </div>
-        <div class="message me">
-          <img src="https://placehold.co/50x50?text=HA" alt="Avatar" />
-          <p>Hello guys!<br /> How're you guys doing?</p>
-        </div>
-      </article>
-      
-      <div class="message-nav">
-        <input type="text" name="message" id="message" placeholder="Message..." />
-        <!-- <button type="submit" class="send-button">Send</button> -->
-        <input type="image" src="../send-button.png" alt="Submit" name="message" />
-      </div>
+      <%- include('chat', { roomId: 0 }) %>
     </div>
+
+    <script>
+      function exit() {
+        // Redirect to the specified URL ("/") or perform any other action
+        window.location.href = "/";
+      }
+      function playCard(index) {
+        console.log("hi")
+        var form = document.getElementById(`playCardForm${index}`);
+        // Submit the form
+        form.submit();
+      } 
+    </script>
+
+    <script>
+      function openPopup(winnerName) {
+        document.getElementById("winnerName").innerText = winnerName;
+        document.getElementById("winPopup").style.display = "flex";
+      }
+      function closePopup() {
+        document.getElementById("winPopup").style.display = "none";
+      }
+    </script>
 
   </main>
 </body>
-
 </html>

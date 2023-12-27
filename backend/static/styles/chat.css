@@ -1,21 +1,72 @@
-div.message {
-  clear: both;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+.message-container {
+  display: flex;
+  flex-direction: column;
+  height: 520px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.message-left,
+.message-right {
+  list-style: none;
+  padding: 8px 12px;
+  margin: 12px;
+  max-width: 250px;
+
+  font-size: 18px;
+  word-wrap: break-word;
+}
+
+.message-left {
+  border-radius: 20px 20px 20px 0px;
+  align-self: flex-start;
   text-align: left;
+  background-color: #fff;
+  box-shadow: -2px 2px 4px #dcdcdc;
+  margin-right: auto;
 }
 
-div.me p {
-  font-style: italic;
-  color: #777;
+.message-right {
+  border-radius: 20px 20px 0px 20px;
+  align-self: flex-end;
   text-align: right;
+  background-color: #2d2d2d;
+  box-shadow: 2px 2px 4px #dcdcdc;
+  color: #f6f6f6;
+  margin-left: auto;
 }
 
-div.message img {
-  border-radius: 25px;
-  float: left;
-  margin-right: 15px;
+.message-left > p > span,
+.message-right > p > span {
+  display: block;
+  font-style: italic;
+  font-size: 12px;
+  margin-top: 4px;
 }
 
-div.me img {
-  float: right;
-  margin-left: 15px;
+.message-form {
+  display: flex;
+  justify-content: space-between;
+  max-width: 200vh;
+  margin-bottom: 0;
+}
+
+.send-button {
+  font-size: 16px;
+  border: none;
+  padding: 0px 20px;
+  outline: none;
+  cursor: pointer;
+}
+
+.clients-total {
+  margin-bottom: auto;
+  color: #7e7e7e;
 }
